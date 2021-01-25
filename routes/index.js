@@ -34,7 +34,6 @@ router.get("/", function (req, res) {
 router.post("/", function (req, res) {
     var city = req.body.city;
     var url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + apiKey + '&units=metric';
-    console.log(url)
     request(url, function (err, response, body) {
         if (err) {
             console.log(err);
@@ -82,28 +81,27 @@ router.post("/", function (req, res) {
             }
 
             var forecast = [];
-            var url = 'http://api.openweathermap.org/data/2.5/forecast/daily?q=' + city + '&appid=' + apiKey + '&units=metric';
+            var url = 'http://127.0.0.1:8001/weather';
             request(url, function (err, response, body) {
                 if (err) {
-                    console.log(err);
                     res.render("index", {weather: null, error: 'Error, please try again'});
                 } else {
                     var forecastResponse = JSON.parse(body)
-                    console.log(forecastResponse.list)
-                    forecast = forecastResponse.list.map(item => ({
+                    console.log(forecastResponse)
+                    forecast = forecastResponse.map(item => ({
                         speed: item.speed,
                         deg: item.deg,
                         clouds: item.clouds,
                         humidity: item.humidity,
                         pressure: item.pressure,
-                        tempDay: item.temp.day,
-                        tempMin: item.temp.min,
-                        tempMax: item.temp.max,
+                        tempDay: item.temp,
+                        tempMin: item.temp_min,
+                        tempMax: item.temp_max,
                         pop: item.pop || 0,
                         dt: moment.unix(item.dt).format("DD-MM-YYYY"),
                         snow: item.snow || 0,
                     }))
-                    console.log(forecast)
+                    console.log("forecast", forecast)
                 }
 
                 res.render("index", {
